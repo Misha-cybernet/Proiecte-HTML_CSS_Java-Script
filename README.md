@@ -1,2 +1,17 @@
-# Proiecte-HTML_CSS_Java-Script
-Aici am încărcate proiectele mele realizate la cursul de Asistență pentru programarea client-side a site-urilor WEB
+# Date Calculation Web App
+
+## Descriere
+Aplicație web pentru calcularea datelor calendaristice.
+
+## Tehnologii
+- HTML
+- CSS
+- JavaScript
+
+## Funcționalități
+- live clock
+- calcul diferență zile
+- istoric operații
+
+## Cum rulezi
+Deschide index.html în browser.
