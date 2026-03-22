@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicație web Date-Calculation</title>
+    <style>
+:root {
+    --bg: #050505;
+    --text: #ffffff;
+    --text-dim: #8a8a8a;
+    --accent: #6366f1;
+    --accent-light: #818cf8;
+    --glow: rgba(99, 102, 241, 0.5);
+}
+
+.switcher {
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.lightmode {
+    --bg: #ffffff;
+    --text: #050505;
+    --text-dim: #4a4a4a;
+    --accent: #6366f1;
+    --accent-light: #818cf8;
+    --glow: rgba(99, 102, 241, 0.25);
+}
+
+.lightmode .time-block,
+.lightmode .sidebar,
+.lightmode .calculator-panel,
+.lightmode .header {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+#theme-switch {
+  height: 50px;
+  width: 50px;
+  padding: 0;
+  border-radius: 50%;
+  background-color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#theme-switch svg {
+  fill: var(--bg)
+}
+#theme-switch svg:last-child {
+  display: none;
+}
+.lightmode #theme-switch svg:first-child {
+  display: none;
+}
+.lightmode #theme-switch svg:last-child {
+  display: block;
+}
+
+.lightmode .blob {
+    opacity: 0.3;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Space Grotesk", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  margin: 0;
+}
+
+.btn {
+    border: none;
+    cursor: pointer;
+    padding: .75rem 1rem;
+    border-radius: .25rem;
+}
+
+.btn-search {
+    color: #fff;
+    background-color: #6366f1;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  animation: float 15s ease-in-out infinite;
+}
+
+.blob-1 {
+  width: 500px;
+  height: 500px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  top: -15%;
+  left: -10%;
+}
+
+.blob-2 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  bottom: -10%;
+  right: -10%;
+  animation-delay: -7s;
+}
+
+.blob-3 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, #06b6d4, #6366f1);
+  top: 50%;
+  left: 50%;
+  animation-delay: -10s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(50px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(30px, -30px) scale(0.9);
+  }
+}
+
+.container {
+  text-align: center;
+  padding: 2rem;
+  padding-top: 8rem;
+  width: 100%;
+}
+
+.logo {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0;
+}
+
+.logo-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.logo span {
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.countdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.time-block {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  min-width: 90px;
+  backdrop-filter: blur(10px);
+}
+
+.time-value {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+  background: linear-gradient(135deg, var(--text), var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.date-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+  background: linear-gradient(135deg, var(--text), var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.date-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.time-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.separator {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.separator_2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.socials {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.socials a {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.socials a:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  transform: translateY(-3px);
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  .logo {
+    margin-bottom: 2rem;
+  }
+
+  .countdown {
+    gap: 0.5rem;
+  }
+
+  .time-block {
+    padding: 1rem;
+    min-width: 70px;
+  }
+
+  .time-value {
+    font-size: 1.75rem;
+  }
+
+  .separator {
+    font-size: 1.5rem;
+  }
+}
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    "header header header header header header"
+    "left middle middle middle middle right"
+    "footer footer footer footer footer footer";
+  grid-template-columns: 1fr 2fr 2fr 2fr 2fr 1fr;
+  gap: 15px;
+  width: 100%;
+}
+
+.header {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+}
+
+.header {
+  grid-area: header;
+  text-align: center;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  backdrop-filter: blur(14px);
+  padding: 1.0rem;
+  border-radius: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: center;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
+.work-page {
+  text-align: center;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  backdrop-filter: blur(14px);
+  padding: 1.0rem;
+  border-radius: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: center;
+}
+
+.sidebar {
+  grid-area: left;
+  width: 320px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(14px);
+  padding: 1.5rem;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all .3s ease;
+}
+
+.sidebar:hover {
+  border-color: var(--accent);
+  box-shadow: 0 10px 35px rgba(99,102,241,.25);
+}
+
+.city-form {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.city-form label {
+  font-size: 1.5rem;
+  color: var(--text-dim);
+  letter-spacing: .05em;
+}
+
+.functionalitati {
+  font-size: 1.5rem;
+  color: var(--text-dim);
+  margin-top: 5rem;
+  letter-spacing: .05em;
+}
+
+.city-form input {
+  padding: .7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  outline: none;
+  transition: all .25s ease;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.divider::before,
+.divider::after {
+    flex: 1;
+    content: ' ';
+    height: 1px;
+    background-color: #8a8a8a;
+}
+
+.btn-location {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text);
+  transition: all .25s ease;
+}
+
+.btn-location:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-istoric {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text);
+  transition: all .25s ease;
+}
+
+.btn-istoric:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-json {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text);
+  transition: all .25s ease;
+}
+
+.btn-json:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.content {
+  grid-area: middle;
+}
+
+.calculatoare {
+  grid-area: right;
+  width: 400px;
+}
+
+.footer {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+}
+
+.container {
+  padding-bottom: 6rem;
+}
+
+.footer {
+  grid-area: footer;
+  text-align: center;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  backdrop-filter: blur(14px);
+  padding: 1.0rem;
+  border-radius: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+}
+
+  .calculatoare h2 {
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .calculator-panel {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+  }
+
+  .calculator-panel:hover {
+    border-color: var(--accent);
+    box-shadow: 0 10px 35px rgba(99, 102, 241, 0.25);
+    transform: translate(-3px);
+  }
+
+  .detalii-calculator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.denumire {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.detalii-calculator button {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+}
+
+.detalii-calculator button:hover {
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent-light)
+  );
+  border-color: var(--accent);
+  color: white;
+  transform: translateX(4px);
+  box-shadow: 0 5px 20px var(--glow);
+}
+
+.masa-lucru {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    width: 100%;
+    text-align: left;
+}
+
+.masa-titlu {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent-light);
+}
+
+.masa-rand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.masa-rand label {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.masa-rand input {
+    padding: .7rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.masa-rezultat {
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(99,102,241,0.15);
+    border: 1px solid rgba(99,102,241,0.3);
+    color: var(--accent-light);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.masa-rand select {
+    padding: .7rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    background-color: #1a1a2e;
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.masa-rand select option {
+    background-color: #1a1a2e;
+    color: #ffffff;
+}
+
+.lightmode .masa-rand select {
+    background-color: #e8e8f0;
+    color: #050505;
+}
+
+.lightmode .masa-rand select option {
+    background-color: #e8e8f0;
+    color: #050505;
+}
+
+.cronometru-display {
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(99,102,241,0.1);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 14px;
+    letter-spacing: 0.1em;
+    color: var(--accent-light);
+}
+
+.crono-butoane {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.crono-butoane .btn {
+    flex: 1;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+}
+.tempo-inputs {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.tempo-input-grup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.tempo-input-grup input {
+    width: 70px;
+    padding: .7rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.tempo-input-grup span {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.calendar-titlu {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-light);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.calendar-zi-header {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    padding: 0.4rem 0;
+}
+
+.calendar-zi {
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: default;
+}
+
+.calendar-zi:hover:not(.calendar-zi-gol) {
+    background: rgba(99,102,241,0.2);
+    cursor: pointer;
+}
+
+.calendar-zi-gol {
+    background: transparent;
+}
+
+.calendar-zi-azi {
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    border-radius: 10%;
+}
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"/>
+    <link href="https://fonts.googleapis.com/css?family=Space+Grotesk: 300,regular,500,600,700"
+    rel="stylesheet"/>
+</head>
+<body>
+    <div class="bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="container grid-container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i style="font-size:32px" class="fa">&#xf017;</i>
+                </div>
+                <span>TIME Calculation</span>
+            </div>
+            <div class="switcher">
+              <button id="theme-switch">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M338.5-338.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>
+              </button>
+            </div>
+        </div>
+
+        <div class="sidebar">
+             <form id="cityForm" class="city-form">
+                <label for="city">Introduceți orașul</label>
+                <input id="city" type="text" placeholder="Chișinău, București, Paris, Londra, Moscova" required>
+                <button class="btn btn-search">Caută</button>
+             </form>
+             <div class="divider">
+                <span class="divider">sau</span>
+             </div>
+             <button id="location" class="btn btn-location">
+                Folosește locația curentă
+             </button>
+
+             <label for="istoric" class="functionalitati">Funcționalități opționale</label>
+             <button id="istoric" class="btn btn-istoric">
+                Vezi istoric
+             </button>
+             <button id="json" class="btn btn-json">
+                Export în JSON
+             </button>
+        </div>
+
+        <div class="content">
+                <section class="countdown">
+                    <div class="time-block">
+                        <span class="time-value" id="hours">00</span>
+                        <span class="time-label">Hours</span>
+                    </div>
+                    <span class="separator">:</span>
+
+                    <div class="time-block">
+                        <span class="time-value" id="minutes">00</span>
+                        <span class="time-label">Minutes</span>
+                    </div>
+                    <span class="separator">:</span>
+
+                    <div class="time-block">
+                        <span class="time-value" id="seconds">00</span>
+                        <span class="time-label">Seconds</span>
+                    </div>
+                </section>
+
+                <section class="countdown">
+                    <div class="date-block">
+                        <span class="date-value" id="ZZ">ZZ</span>
+                        <span class="date-label" id="label-1">Ziua</span>
+                    </div>
+                    <span class="separator_2" id="separator_2_1">/</span>
+
+                    <div class="data-block">
+                        <span class="date-value" id="LL">LL</span>
+                        <span class="date-label" id="label-2">Luna</span>
+                    </div>
+                    <span class="separator_2" id="separator_2_2">/</span>
+
+                    <div class="data-block">
+                        <span class="date-value" id="AAAA">AAAA</span>
+                        <span class="date-label" id="label-3">Anul</span>
+                    </div>
+                </section>
+
+                <div class="work-page" id="work-page">
+
+                </div>
+            </div>
+
+
+
+            <div class="calculatoare">
+                <div>
+                    <h2>Alte calculatoare</h2>
+                    <div class="calculator-panel">
+                        <div class="detalii-calculator">
+                           <p class="denumire">Afișarea și actualizarea timpului curent</p> 
+                           <button type="button" id="format-1">ZZ/LL/AAAA</button>
+                           <button type="button" id="format-2">YYYY-MM-DD</button>
+                           <button type="button" id="format-3">Data Ziua Anul</button>
+                        </div>
+                    </div>
+                    <div class="calculator-panel">
+                        <div class="detalii-calculator">
+                           <p class="denumire">Operații asupra datelor introduse</p> 
+                           <button type="button" id="btn-ziua">Determinarea zilei săptămânii</button>
+                           <button type="button" id="btn-diferenta">Calcularea diferențelor între două date</button>
+                           <button type="button" id="btn-varsta">Calculul vârstei</button>
+                        </div>
+                    </div>
+                    <div class="calculator-panel">
+                        <div class="detalii-calculator">
+                           <p class="denumire">Manipularea orei</p> 
+                           <button type="button" id="btn-adaugare-scadere">Adăugare / scădere de timp</button>
+                           <button type="button" id="btn-conversii">Conversii de fus orar</button>
+                        </div>
+                    </div>
+                    <div class="calculator-panel">
+                        <div class="detalii-calculator">
+                           <p class="denumire">Funcționalități avansate</p> 
+                           <button type="button" id="btn-cronometru">Cronometru</button>
+                           <button type="button" id="btn-temporizator">Temporizator (countdown)</button>
+                           <button type="button" id="btn-calendar">Calendar interactiv simplu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="footer">
+            <div class="socials">
+                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-discord"></i></a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const hours = document.getElementById("hours");
+        const minutes = document.getElementById("minutes");
+        const seconds = document.getElementById("seconds");
+
+        let formatCurent = 1;
+        const sep1 = document.getElementById("separator_2_1");
+        const sep2 = document.getElementById("separator_2_2");
+        const lbl1 = document.getElementById("label-1");
+        const lbl2 = document.getElementById("label-2");
+        const lbl3 = document.getElementById("label-3");
+
+        const AAAA = document.getElementById("AAAA");
+        const LL = document.getElementById("LL");
+        const ZZ = document.getElementById("ZZ");
+
+        const emailForm = document.getElementById("email-form");
+        const successMessage = document.getElementById("success");
+
+        function updateClock() {
+        const now = new Date();
+
+        const h = now.getHours();
+        const m = now.getMinutes();
+        const s = now.getSeconds();
+
+        hours.textContent = String(h).padStart(2, "0");
+        minutes.textContent = String(m).padStart(2, "0");
+        seconds.textContent = String(s).padStart(2, "0");
+        }
+
+        function actualizeazaData() {
+        const acum = new Date();
+
+        const zi = String(acum.getDate()).padStart(2, "0");
+        const luna = String(acum.getMonth() + 1).padStart(2, "0");
+        const an = acum.getFullYear();
+
+        if (formatCurent === 1) {
+            
+            ZZ.textContent = zi;
+            LL.textContent = luna;
+            AAAA.textContent = an;
+            sep1.textContent = "/";
+            sep2.textContent = "/";
+            lbl1.textContent = "Data";
+            lbl2.textContent = "Luna";
+            lbl3.textContent = "Anul";
+        }
+
+        if (formatCurent === 2) {
+            
+            ZZ.textContent = an;
+            LL.textContent = luna;
+            AAAA.textContent = zi;
+            sep1.textContent = "-";
+            sep2.textContent = "-";
+            lbl1.textContent = "Anul";
+            lbl2.textContent = "Luna";
+            lbl3.textContent = "Data";
+        }
+
+        if (formatCurent === 3) {
+            const zile = [
+                "Duminică","Luni","Marți","Miercuri",
+                "Joi","Vineri","Sâmbătă"
+            ];
+
+            ZZ.textContent = zi;
+            LL.textContent = zile[acum.getDay()];
+            AAAA.textContent = an;
+            sep1.textContent = " ";
+            sep2.textContent = " ";
+            lbl1.textContent = "Data";
+            lbl2.textContent = "Ziua";
+            lbl3.textContent = "Anul";
+        }
+    }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+        actualizeazaData();
+        setInterval(actualizeazaData, 1000);
+
+        document.getElementById("format-1").onclick = () => {
+        formatCurent = 1;
+        actualizeazaData();
+        };
+
+        document.getElementById("format-2").onclick = () => {
+        formatCurent = 2;
+        actualizeazaData();
+        };
+
+        document.getElementById("format-3").onclick = () => {
+        formatCurent = 3;
+        actualizeazaData();
+        };
+
+        const workPage = document.getElementById("work-page");
+
+        const templates = {
+            ziuaSaptamanii: `
+                <div class="masa-lucru">
+                <h3 class="masa-titlu">Determinarea zilei săptămânii</h3>
+                <div class="masa-rand">
+                    <label>Introduceți data:</label>
+                    <input type="date" id="input-data">
+                </div>
+                <button class="btn btn-search" onclick="calculeazaZiua()">Calculează</button>
+                <div class="masa-rezultat" id="rezultat" style="display:none">
+                    <span id="rezultat-text"></span>
+                </div>
+            </div>
+            `,
+            diferentaDate: `
+                <div class="masa-lucru">
+                <h3 class="masa-titlu">Diferența între două date</h3>
+                <div class="masa-rand">
+                    <label>Data de început:</label>
+                    <input type="date" id="data1">
+                </div>
+                <div class="masa-rand">
+                    <label>Data de sfârșit:</label>
+                    <input type="date" id="data2">
+                </div>
+                <button class="btn btn-search" onclick="calculeazaDiferenta()">Calculează</button>
+                <div class="masa-rezultat" id="rezultat" style="display:none">
+                    <span id="rezultat-text"></span>
+                </div>
+            </div>
+            `,
+            varsta: `
+              <div class="masa-lucru">
+                  <h3 class="masa-titlu">Calculul vârstei</h3>
+                  <div class="masa-rand">
+                      <label>Data nașterii:</label>
+                      <input type="date" id="data-nastere">
+                  </div>
+                  <button class="btn btn-search" onclick="calculeazaVarsta()">Calculează</button>
+                  <div class="masa-rezultat" id="rezultat" style="display:none">
+                      <span id="rezultat-text"></span>
+                  </div>
+              </div>
+          `,
+          adaugareScadere: `
+              <div class="masa-lucru">
+              <h3 class="masa-titlu">Adăugare / Scădere de timp</h3>
+              <div class="masa-rand">
+                  <label>Data de bază:</label>
+                  <input type="date" id="data-baza">
+              </div>
+              <div class="masa-rand">
+                  <label>Cantitate:</label>
+                  <input type="number" id="cantitate" min="1" placeholder="ex: 10">
+              </div>
+              <div class="masa-rand">
+                  <label>Unitate de timp:</label>
+                  <select id="unitate">
+                      <option value="zile">Zile</option>
+                      <option value="luni">Luni</option>
+                      <option value="ani">Ani</option>
+                  </select>
+              </div>
+              <div class="masa-rand">
+                  <label>Operație:</label>
+                  <select id="operatie">
+                      <option value="adauga">Adaugă</option>
+                      <option value="scade">Scade</option>
+                  </select>
+              </div>
+              <button class="btn btn-search" onclick="calculeazaAdaugareScadere()">Calculează</button>
+              <div class="masa-rezultat" id="rezultat" style="display:none">
+                  <span id="rezultat-text"></span>
+              </div>
+          </div>
+          `,
+          cronometru: `
+          <div class="masa-lucru">
+              <h3 class="masa-titlu">Cronometru</h3>
+              <div class="cronometru-display" id="crono-display">00:00:00</div>
+              <div class="crono-butoane">
+                  <button class="btn btn-search" onclick="cronoStart()">Start</button>
+                  <button class="btn btn-location" onclick="cronoStop()">Stop</button>
+                  <button class="btn btn-json" onclick="cronoReset()">Reset</button>
+              </div>
+          </div>
+        `,
+        temporizator: `
+          <div class="masa-lucru">
+              <h3 class="masa-titlu">Temporizator (Countdown)</h3>
+              <div class="masa-rand">
+                  <label>Setează timpul:</label>
+                  <div class="tempo-inputs">
+                      <div class="tempo-input-grup">
+                          <input type="number" id="tempo-ore" min="0" max="23" value="0" placeholder="0">
+                          <span>ore</span>
+                      </div>
+                      <div class="tempo-input-grup">
+                          <input type="number" id="tempo-minute" min="0" max="59" value="0" placeholder="0">
+                          <span>min</span>
+                      </div>
+                      <div class="tempo-input-grup">
+                          <input type="number" id="tempo-secunde" min="0" max="59" value="0" placeholder="0">
+                          <span>sec</span>
+                      </div>
+                  </div>
+              </div>
+              <div class="cronometru-display" id="tempo-display">00:00:00</div>
+              <div class="crono-butoane">
+                  <button class="btn btn-search" onclick="tempoStart()">Start</button>
+                  <button class="btn btn-location" onclick="tempoStop()">Stop</button>
+                  <button class="btn btn-json" onclick="tempoReset()">Reset</button>
+              </div>
+              <div class="masa-rezultat" id="tempo-rezultat" style="display:none">
+                  <span>Timpul a expirat!</span>
+              </div>
+          </div>
+        `,
+        conversii: `
+          <div class="masa-lucru">
+              <h3 class="masa-titlu">Conversii de fus orar</h3>
+              <div class="masa-rand">
+                  <label>Data și ora:</label>
+                  <input type="datetime-local" id="datetime-input">
+              </div>
+              <div class="masa-rand">
+                  <label>Din fusul orar:</label>
+                  <select id="fus-sursa">
+                      <option value="Europe/Chisinau">Chișinău (UTC+2/+3)</option>
+                      <option value="Europe/Bucharest">București (UTC+2/+3)</option>
+                      <option value="Europe/London">Londra (UTC+0/+1)</option>
+                      <option value="Europe/Paris">Paris (UTC+1/+2)</option>
+                      <option value="Europe/Moscow">Moscova (UTC+3)</option>
+                      <option value="America/New_York">New York (UTC-5/-4)</option>
+                      <option value="America/Los_Angeles">Los Angeles (UTC-8/-7)</option>
+                      <option value="Asia/Tokyo">Tokyo (UTC+9)</option>
+                      <option value="Asia/Dubai">Dubai (UTC+4)</option>
+                  </select>
+              </div>
+              <div class="masa-rand">
+                  <label>În fusul orar:</label>
+                  <select id="fus-destinatie">
+                      <option value="Europe/London">Londra (UTC+0/+1)</option>
+                      <option value="Europe/Chisinau">Chișinău (UTC+2/+3)</option>
+                      <option value="Europe/Bucharest">București (UTC+2/+3)</option>
+                      <option value="Europe/Paris">Paris (UTC+1/+2)</option>
+                      <option value="Europe/Moscow">Moscova (UTC+3)</option>
+                      <option value="America/New_York">New York (UTC-5/-4)</option>
+                      <option value="America/Los_Angeles">Los Angeles (UTC-8/-7)</option>
+                      <option value="Asia/Tokyo">Tokyo (UTC+9)</option>
+                      <option value="Asia/Dubai">Dubai (UTC+4)</option>
+                  </select>
+              </div>
+              <button class="btn btn-search" onclick="calculeazaFusOrar()">Convertește</button>
+              <div class="masa-rezultat" id="rezultat" style="display:none">
+                  <span id="rezultat-text"></span>
+              </div>
+          </div>
+        `,
+        calendar: `
+          <div class="masa-lucru">
+              <h3 class="masa-titlu">Calendar interactiv</h3>
+              <div class="calendar-nav">
+                  <button class="btn btn-location" onclick="schimbaLuna(-1)">&#8592;</button>
+                  <span class="calendar-titlu" id="calendar-titlu"></span>
+                  <button class="btn btn-location" onclick="schimbaLuna(1)">&#8594;</button>
+              </div>
+              <div class="calendar-grid">
+                  <div class="calendar-zi-header">Lu</div>
+                  <div class="calendar-zi-header">Ma</div>
+                  <div class="calendar-zi-header">Mi</div>
+                  <div class="calendar-zi-header">Jo</div>
+                  <div class="calendar-zi-header">Vi</div>
+                  <div class="calendar-zi-header">Sâ</div>
+                  <div class="calendar-zi-header">Du</div>
+              </div>
+              <div class="calendar-grid" id="calendar-zile"></div>
+          </div>
+        `,
+        istoric: `
+        <div class="masa-lucru" id="istoric-container">
+            <h3 class="masa-titlu">Istoric operații</h3>
+            <div id="istoric-lista"></div>
+            <button class="btn btn-json" style="margin-top:.5rem" onclick="stergeIstoric()">Șterge tot istoricul</button>
+        </div>
+        `,
+        };
+
+        function incarcaMasa(tip) {
+            workPage.innerHTML = templates[tip];
+        }
+
+        function calculeazaZiua() {
+        const input = document.getElementById("input-data").value;
+
+        if (!input) {
+            alert("Te rog introdu o dată!");
+            return;
+        }
+
+        const zile = ["Duminică", "Luni", "Marți", "Miercuri", "Joi", "Vineri", "Sâmbătă"];
+
+        const data = new Date(input);
+        const numeZi = zile[data.getDay()];
+
+        document.getElementById("rezultat-text").textContent = `${input} este ${numeZi}`;
+        document.getElementById("rezultat").style.display = "block";
+        adaugaInIstoric("Ziua săptămânii", `${input} → ${numeZi}`);
+        }
+
+        function calculeazaDiferenta() {
+        const val1 = document.getElementById("data1").value;
+        const val2 = document.getElementById("data2").value;
+
+        if (!val1 || !val2) {
+            alert("Te rog introdu ambele date!");
+            return;
+        }
+
+        const data1 = new Date(val1);
+        const data2 = new Date(val2);
+
+        if (data2 < data1) {
+            alert("Data de sfârșit trebuie să fie după data de început!");
+            return;
+        }
+
+        const diffMs = data2 - data1;
+        const diffZile = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        let ani = data2.getFullYear() - data1.getFullYear();
+        let luni = data2.getMonth() - data1.getMonth();
+
+        if (luni < 0) {
+            ani--;
+            luni += 12;
+        }
+
+        document.getElementById("rezultat-text").innerHTML = `
+            <strong>${diffZile} zile</strong> totale<br>
+            Este echivalent cu aproximativ: <strong>${ani} ani</strong> și <strong>${luni} luni</strong>
+        `;
+        document.getElementById("rezultat").style.display = "block";
+        adaugaInIstoric("Diferență date", `${val1} → ${val2}: ${diffZile} zile (${ani} ani, ${luni} luni)`);
+    }
+
+    function calculeazaVarsta() {
+        const val = document.getElementById("data-nastere").value;
+
+        if (!val) {
+            alert("Te rog introdu data nașterii!");
+            return;
+        }
+
+        const nastere = new Date(val);
+        const azi = new Date();
+
+        if (nastere > azi) {
+            alert("Data nașterii nu poate fi în viitor!");
+            return;
+        }
+
+        let ani = azi.getFullYear() - nastere.getFullYear();
+        let luni = azi.getMonth() - nastere.getMonth();
+        let zile = azi.getDate() - nastere.getDate();
+
+        if (zile < 0) {
+            luni--;
+            const lunaAnter = new Date(azi.getFullYear(), azi.getMonth(), 0);
+            zile += lunaAnter.getDate();
+        }
+
+        if (luni < 0) {
+            ani--;
+            luni += 12;
+        }
+
+        const totalZile = Math.floor((azi - nastere) / (1000 * 60 * 60 * 24));
+
+        document.getElementById("rezultat-text").innerHTML = `
+            Ai <strong>${ani} ani</strong>, <strong>${luni} luni</strong> și <strong>${zile} zile</strong><br>
+            Total: <strong>${totalZile.toLocaleString()} zile</strong> trăite
+        `;
+        document.getElementById("rezultat").style.display = "block";
+        adaugaInIstoric("Vârstă", `Născut ${val} → ${ani} ani, ${luni} luni, ${zile} zile`);
+    }
+
+    function calculeazaAdaugareScadere() {
+        const valData = document.getElementById("data-baza").value;
+        const cantitate = parseInt(document.getElementById("cantitate").value);
+        const unitate = document.getElementById("unitate").value;
+        const operatie = document.getElementById("operatie").value;
+
+        if (!valData || isNaN(cantitate) || cantitate <= 0) {
+            alert("Te rog completează toate câmpurile corect!");
+            return;
+        }
+
+        const data = new Date(valData);
+        const semn = operatie === "adauga" ? 1 : -1;
+
+        if (unitate === "zile") {
+            data.setDate(data.getDate() + semn * cantitate);
+        } else if (unitate === "luni") {
+            data.setMonth(data.getMonth() + semn * cantitate);
+        } else if (unitate === "ani") {
+            data.setFullYear(data.getFullYear() + semn * cantitate);
+        }
+
+        const zi = String(data.getDate()).padStart(2, "0");
+        const luna = String(data.getMonth() + 1).padStart(2, "0");
+        const an = data.getFullYear();
+
+        const operatieText = operatie === "adauga" ? "adăugând" : "scăzând";
+
+        document.getElementById("rezultat-text").innerHTML = `
+            După ${operatieText} <strong>${cantitate} ${unitate}</strong>, data rezultată este:<br>
+            <strong>${zi}/${luna}/${an}</strong>
+        `;
+        document.getElementById("rezultat").style.display = "block";
+        adaugaInIstoric("Adăugare/Scădere", `${valData} ${operatie === "adauga" ? "+" : "-"} ${cantitate} ${unitate} → ${zi}/${luna}/${an}`);
+    }
+
+    let cronoInterval = null;
+    let cronoSecunde = 0;
+
+    function cronoAfiseaza() {
+        const ore = Math.floor(cronoSecunde / 3600);
+        const minute = Math.floor((cronoSecunde % 3600) / 60);
+        const sec = cronoSecunde % 60;
+
+        document.getElementById("crono-display").textContent =
+            String(ore).padStart(2, "0") + ":" +
+            String(minute).padStart(2, "0") + ":" +
+            String(sec).padStart(2, "0");
+    }
+
+    function cronoStart() {
+        if (cronoInterval) return;
+
+        cronoInterval = setInterval(() => {
+            cronoSecunde++;
+            cronoAfiseaza();
+        }, 1000);
+    }
+
+    function cronoStop() {
+        clearInterval(cronoInterval);
+        cronoInterval = null;
+    }
+
+    function cronoReset() {
+        cronoStop();
+        cronoSecunde = 0;
+        cronoAfiseaza();
+    }
+
+    let tempoInterval = null;
+    let tempoSecunde = 0;
+    let tempoSecundeInitiale = 0;
+
+    function tempoAfiseaza() {
+        const ore = Math.floor(tempoSecunde / 3600);
+        const minute = Math.floor((tempoSecunde % 3600) / 60);
+        const sec = tempoSecunde % 60;
+
+        document.getElementById("tempo-display").textContent =
+            String(ore).padStart(2, "0") + ":" +
+            String(minute).padStart(2, "0") + ":" +
+            String(sec).padStart(2, "0");
+    }
+
+    function tempoStart() {
+        if (tempoInterval) return;
+
+        if (tempoSecunde === 0) {
+            const ore = parseInt(document.getElementById("tempo-ore").value) || 0;
+            const minute = parseInt(document.getElementById("tempo-minute").value) || 0;
+            const sec = parseInt(document.getElementById("tempo-secunde").value) || 0;
+
+            tempoSecunde = ore * 3600 + minute * 60 + sec;
+            tempoSecundeInitiale = tempoSecunde;
+
+            if (tempoSecunde === 0) {
+                alert("Te rog setează un timp mai mare ca zero!");
+                return;
+            }
+        }
+
+        document.getElementById("tempo-rezultat").style.display = "none";
+
+        tempoInterval = setInterval(() => {
+            tempoSecunde--;
+            tempoAfiseaza();
+
+            if (tempoSecunde <= 0) {
+                tempoStop();
+                document.getElementById("tempo-rezultat").style.display = "block";
+            }
+        }, 1000);
+    }
+
+    function tempoStop() {
+        clearInterval(tempoInterval);
+        tempoInterval = null;
+    }
+
+    function tempoReset() {
+        tempoStop();
+        tempoSecunde = 0;
+        document.getElementById("tempo-rezultat").style.display = "none";
+        tempoAfiseaza();
+
+        document.getElementById("tempo-ore").value = 0;
+        document.getElementById("tempo-minute").value = 0;
+        document.getElementById("tempo-secunde").value = 0;
+    }
+
+    function calculeazaFusOrar() {
+    const val = document.getElementById("datetime-input").value;
+    const fusSursa = document.getElementById("fus-sursa").value;
+    const fusDestinatie = document.getElementById("fus-destinatie").value;
+
+    if (!val) {
+        alert("Te rog introdu data și ora!");
+        return;
+    }
+
+    const dataOriginala = new Date(val);
+
+    const optiuni = {
+        timeZone: fusDestinatie,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    };
+
+    const dataConvertita = dataOriginala.toLocaleString("ro-RO", optiuni);
+    const numeFusuri = {
+        "Europe/Chisinau": "Chișinău",
+        "Europe/Bucharest": "București",
+        "Europe/London": "Londra",
+        "Europe/Paris": "Paris",
+        "Europe/Moscow": "Moscova",
+        "America/New_York": "New York",
+        "America/Los_Angeles": "Los Angeles",
+        "Asia/Tokyo": "Tokyo",
+        "Asia/Dubai": "Dubai"
+    };
+
+    document.getElementById("rezultat-text").innerHTML = `
+        Ora în <strong>${numeFusuri[fusSursa]}</strong>:<br>
+        <strong>${val.replace("T", " ")}</strong><br><br>
+        Ora în <strong>${numeFusuri[fusDestinatie]}</strong>:<br>
+        <strong>${dataConvertita}</strong>
+    `;
+    document.getElementById("rezultat").style.display = "block";
+    adaugaInIstoric("Fus orar", `${numeFusuri[fusSursa]} → ${numeFusuri[fusDestinatie]}: ${dataConvertita}`);
+}
+
+    let calendarAn = new Date().getFullYear();
+    let calendarLuna = new Date().getMonth();
+
+    const luniRomana = [
+        "Ianuarie", "Februarie", "Martie", "Aprilie",
+        "Mai", "Iunie", "Iulie", "August",
+        "Septembrie", "Octombrie", "Noiembrie", "Decembrie"
+    ];
+
+    function genereazaCalendar() {
+        const azi = new Date();
+        const primaZi = new Date(calendarAn, calendarLuna, 1);
+        const ultimaZi = new Date(calendarAn, calendarLuna + 1, 0);
+
+        document.getElementById("calendar-titlu").textContent =
+            luniRomana[calendarLuna] + " " + calendarAn;
+
+        const container = document.getElementById("calendar-zile");
+        container.innerHTML = "";
+
+        let ziStart = primaZi.getDay();
+        ziStart = ziStart === 0 ? 6 : ziStart - 1;
+
+        for (let i = 0; i < ziStart; i++) {
+            const gol = document.createElement("div");
+            gol.classList.add("calendar-zi", "calendar-zi-gol");
+            container.appendChild(gol);
+        }
+
+        for (let zi = 1; zi <= ultimaZi.getDate(); zi++) {
+            const div = document.createElement("div");
+            div.classList.add("calendar-zi");
+            div.textContent = zi;
+
+            if (
+                zi === azi.getDate() &&
+                calendarLuna === azi.getMonth() &&
+                calendarAn === azi.getFullYear()
+            ) {
+                div.classList.add("calendar-zi-azi");
+            }
+
+            container.appendChild(div);
+        }
+    }
+
+    function schimbaLuna(directie) {
+        calendarLuna += directie;
+
+        if (calendarLuna > 11) {
+            calendarLuna = 0;
+            calendarAn++;
+        }
+        if (calendarLuna < 0) {
+            calendarLuna = 11;
+            calendarAn--;
+        }
+
+        genereazaCalendar();
+    }
+
+    function adaugaInIstoric(tip, detalii) {
+    const istoric = JSON.parse(localStorage.getItem("istoric") || "[]");
+    istoric.unshift({
+        tip,
+        detalii,
+        data: new Date().toLocaleString("ro-RO")
+    });
+    if (istoric.length > 50) istoric.pop();
+    localStorage.setItem("istoric", JSON.stringify(istoric));
+    }
+
+    function afiseazaIstoric() {
+        incarcaMasa("istoric");
+        const istoric = JSON.parse(localStorage.getItem("istoric") || "[]");
+        const lista = document.getElementById("istoric-lista");
+
+        if (istoric.length === 0) {
+            lista.innerHTML = `<div class="masa-rezultat">Nu există operații în istoric.</div>`;
+            return;
+        }
+
+        lista.innerHTML = istoric.map((item, i) => `
+            <div class="masa-rezultat" style="margin-bottom:.5rem">
+                <span style="font-size:.75rem;color:var(--text-dim)">${item.data} — <strong>${item.tip}</strong></span><br>
+                ${item.detalii}
+            </div>
+        `).join("");
+    }
+
+    function stergeIstoric() {
+        localStorage.removeItem("istoric");
+        afiseazaIstoric();
+    }
+
+    function exportJSON() {
+        const istoric = JSON.parse(localStorage.getItem("istoric") || "[]");
+
+        if (istoric.length === 0) {
+            alert("Istoricul este gol! Efectuează mai întâi câteva operații.");
+            return;
+        }
+
+        const blob = new Blob([JSON.stringify(istoric, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `istoric-flux-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+
+        URL.revokeObjectURL(url);
+    }
+
+        document.getElementById("btn-ziua").onclick = () => incarcaMasa("ziuaSaptamanii");
+        document.getElementById("btn-diferenta").onclick = () => incarcaMasa("diferentaDate");
+        document.getElementById("btn-varsta").onclick = () => incarcaMasa("varsta");
+        document.getElementById("btn-adaugare-scadere").onclick = () => incarcaMasa("adaugareScadere");
+        document.getElementById("btn-cronometru").onclick = () => { cronoStop(); cronoSecunde = 0; incarcaMasa("cronometru");};
+        document.getElementById("btn-temporizator").onclick = () => {tempoStop(); tempoSecunde = 0; incarcaMasa("temporizator");};
+        document.getElementById("btn-conversii").onclick = () => incarcaMasa("conversii");
+        document.getElementById("btn-calendar").onclick = () => { calendarAn = new Date().getFullYear(); calendarLuna = new Date().getMonth(); incarcaMasa("calendar"); setTimeout(genereazaCalendar, 50);};
+        document.getElementById("istoric").onclick = afiseazaIstoric;
+        document.getElementById("json").onclick = exportJSON;
+
+        let isLight = localStorage.getItem('lightmode') === 'active';
+        const themeSwitch = document.getElementById('theme-switch');
+
+        const enableLightmode = () => {
+            document.body.classList.add('lightmode');
+            localStorage.setItem('lightmode', 'active');
+            isLight = true;
+        };
+
+        const disableLightmode = () => {
+            document.body.classList.remove('lightmode');
+            localStorage.removeItem('lightmode');
+            isLight = false;
+        };
+
+        if (isLight) enableLightmode();
+
+        themeSwitch.addEventListener('click', () => {
+            isLight ? disableLightmode() : enableLightmode();
+        });
+    </script>
+</body>
+</html>
