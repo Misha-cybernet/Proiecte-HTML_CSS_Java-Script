@@ -15,3 +15,6 @@ Aplicație web pentru calcularea datelor calendaristice.
 
 ## Cum rulezi
 Deschide index.html în browser.
+
+## Demo live
+https://misha-cybernet.github.io/Proiecte-HTML_CSS_Java-Script/
