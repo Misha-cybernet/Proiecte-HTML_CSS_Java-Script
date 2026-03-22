@@ -3,6 +3,8 @@
 ## Descriere
 Aplicație web pentru calcularea datelor calendaristice.
 
+<img width="2525" height="1211" alt="image" src="https://github.com/user-attachments/assets/ce2729a7-9c5c-4fc6-9710-6248098f11a6" />
+
 ## Tehnologii
 - HTML
 - CSS
@@ -12,9 +14,6 @@ Aplicație web pentru calcularea datelor calendaristice.
 - live clock
 - calcul diferență zile
 - istoric operații
-
-- <img width="2559" height="1260" alt="image" src="https://github.com/user-attachments/assets/ffa5d625-79da-4096-8428-4a3b0e4b2582" />
-
 
 ## Vizitează site-ul pe adresa:
 https://misha-cybernet.github.io/Proiecte-HTML_CSS_Java-Script/
