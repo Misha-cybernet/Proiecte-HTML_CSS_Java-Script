@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilet Nr.20</title>
+    <style>
+        :root {
+            --text : black;
+            --bg : #f0f0f0;
+            --accent-light : #369f93;
+            --text-dim : #333;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Space Grotesk", sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-areas: "left middle";
+            grid-template-columns: 320px 1fr;
+            min-height: 100vh;
+            gap: 15px;
+        }
+
+        .calculatoare {
+            grid-area: left;
+            backdrop-filter: blur(14px);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .content {
+            grid-area: middle;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .masa-lucru {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 5px;
+            text-align: center;
+            min-width: 350px;
+        }
+
+        .masa-titlu {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dim);
+        }
+
+        .cronometru-display {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 1.5rem 0;
+            background: var(--text-dim);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cronometru-butoane {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .timer-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .timer-input-grup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timer-input-grup input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+            font-size: 1.2rem;
+            border: 1px solid #ccc;
+        }
+
+        .masa-rezultat {
+            margin-top: 15px;
+            color: red;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .btn {
+            border: none;
+            cursor: pointer;
+            padding: .75rem 1rem;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: var(--accent-light);
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .instrumente-panel {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 5px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .instrumente {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .denumire {
+            font-size: 1.25rem;
+            margin-bottom: .5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .functionalitati {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 18px;
+        }
+
+        .btn-istoric {
+            display: block;
+            margin: 10px auto 0 auto;
+            background-color: #333;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Space+Grotesk:300,regular,500,600,700" rel="stylesheet"/>
+</head>
+<body>
+    <div class="grid-container">
+        
+        <div class="calculatoare">
+            <div>
+                <h2>Instrumente</h2>
+                <div class="instrumente-panel">
+                    <div class="instrumente">
+                        <p class="denumire">Meniu Timp</p>
+                        <button type="button" id="btn-Cronometru">Cronometru</button>
+                        <button type="button" id="btn-Timer">Timer</button>
+                    </div>
+                </div>
+                <label for="istoric" class="functionalitati">Funcționalități opționale</label>
+                <button id="istoric" class="btn btn-istoric">
+                    Vezi istoric
+                </button>
+            </div>
+        </div>
+
+        <div id="work-page" class="content"></div>
+
+    </div>
+
+    <script>
+        const btnCronometru = document.getElementById('btn-Cronometru');
+        const btnTimer = document.getElementById('btn-Timer');
+        const workPage = document.getElementById('work-page');
+
+        const template = {
+            cronometru: `
+              <div class="masa-lucru">
+                  <h3 class="masa-titlu">Cronometru</h3>
+                  <div class="cronometru-display" id="cronometru-display">00:00:00</div>
+                  <div class="cronometru-butoane">
+                      <button onclick="cronometruStart()">Start</button>
+                      <button style="background-color:#e74c3c" onclick="cronometruStop()">Stop</button>
+                      <button style="background-color:#95a5a6" onclick="cronometruReset()">Reset</button>
+                  </div>
+              </div>
+            `,
+            timer: `
+              <div class="masa-lucru">
+                  <h3 class="masa-titlu">Timer</h3>
+                  <div class="masa-rand">
+                      <label style="font-weight: bold; color: var(--text-dim);">Setează timpul:</label>
+                      <div class="timer-inputs">
+                          <div class="timer-input-grup">
+                              <input type="number" id="timer-ore" min="0" max="23" value="0">
+                              <span>ore</span>
+                          </div>
+                          <div class="timer-input-grup">
+                              <input type="number" id="timer-minute" min="0" max="59" value="0">
+                              <span>min</span>
+                          </div>
+                          <div class="timer-input-grup">
+                              <input type="number" id="timer-secunde" min="0" max="59" value="0">
+                              <span>sec</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="cronometru-display" id="timer-display">00:00:00</div>
+                  <div class="cronometru-butoane">
+                      <button onclick="timerStart()">Start</button>
+                      <button style="background-color:#e74c3c" onclick="timerStop()">Stop</button>
+                      <button style="background-color:#95a5a6" onclick="timerReset()">Reset</button>
+                  </div>
+                  <div class="masa-rezultat" id="timer-rezultat" style="display:none">
+                      <span>Timpul a expirat!</span>
+                  </div>
+              </div>
+            `
+        };
+
+        btnCronometru.addEventListener('click', () => {
+            workPage.innerHTML = template.cronometru;
+        });
+
+        btnTimer.addEventListener('click', () => {
+            workPage.innerHTML = template.timer;
+        });
+
+        let cronometruInterval = null;
+        let cronometruSecunde = 0;
+
+        function cronometruAfiseaza() {
+            const h = Math.floor(cronometruSecunde / 3600);
+            const m = Math.floor((cronometruSecunde % 3600) / 60);
+            const s = cronometruSecunde % 60;
+            document.getElementById('cronometru-display').textContent =`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function cronometruStart() {
+            if (cronometruInterval) return;
+            cronometruInterval = setInterval(() => {
+                cronometruSecunde++;
+                cronometruAfiseaza();
+            }, 1000);
+        }
+
+        function cronometruStop() {
+            if (cronometruInterval !== null) {
+            clearInterval(cronometruInterval);
+            cronometruInterval = null;
+
+            const timpCurent = document.getElementById('cronometru-display').textContent;
+            salveazaInIstoric('Cronometru', timpCurent);
+            alert('Timp salvat în istoric!');
+    }
+        }
+
+        function cronometruReset() {
+            cronometruStop();
+            cronometruSecunde = 0;
+            cronometruAfiseaza();
+        }
+
+        let timerInterval = null;
+        let timerSecunde = 0;
+
+        function timerAfiseaza() {
+            const h = Math.floor(timerSecunde / 3600);
+            const m = Math.floor((timerSecunde % 3600) / 60);
+            const s = timerSecunde % 60;
+            document.getElementById('timer-display').textContent =`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function timerStart() {
+            if (timerInterval) return;
+
+            if (timerSecunde === 0) {
+                const h = parseInt(document.getElementById('timer-ore').value) || 0;
+                const m = parseInt(document.getElementById('timer-minute').value) || 0;
+                const s = parseInt(document.getElementById('timer-secunde').value) || 0;
+
+                timerSecunde = h * 3600 + m * 60 + s;
+
+                if (timerSecunde === 0) {
+                    alert('Vă rugăm să setați un timp mai mare ca 0!');
+                    return;
+                }
+            }
+
+            document.getElementById('timer-rezultat').style.display = "none";
+            timerInterval = setInterval(() => {
+                timerSecunde--;
+                timerAfiseaza();
+
+                if (timerSecunde <= 0) {
+                    timerStop();
+                    document.getElementById('timer-rezultat').style.display = "block";
+                }
+            }, 1000);
+        }
+
+        function salveazaInIstoric(tipApp, valoareTimp) {
+        let istoric = JSON.parse(localStorage.getItem('istoricTimp')) || [];
+
+        istoric.push({
+            tip: tipApp,
+            timp: valoareTimp,
+            data: new Date().toLocaleString()
+        });
+        localStorage.setItem('istoricTimp', JSON.stringify(istoric));
+    }
+
+        function timerStop() {
+            if (timerInterval !== null) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            
+            const timpRamas = document.getElementById('timer-display').textContent;
+            salveazaInIstoric('Timer Oprit/Expirat', timpRamas);
+            alert('Timer oprit! Timp rămas: ' + timpRamas + ' (Salvat în istoric)');
+    }
+        }
+
+        function timerReset() {
+            timerStop();
+            timerSecunde = 0;
+
+            const display = document.getElementById('timer-display');
+            const rezultat = document.getElementById('timer-rezultat');
+            const inputOre = document.getElementById('timer-ore');
+            const inputMinute = document.getElementById('timer-minute');
+            const inputSecunde = document.getElementById('timer-secunde');
+
+            if (display) display.textContent = '00:00:00';
+            if (rezultat) rezultat.style.display = "none";
+            if (inputOre) inputOre.value = 0;
+            if (inputMinute) inputMinute.value = 0;
+            if (inputSecunde) inputSecunde.value = 0;
+        }
+    </script>
+</body>
+</html>
